@@ -1,0 +1,58 @@
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "Empleado";
+    Layout = "_LayoutEmpleado";
+}
+
+<div class="main-content" style="margin-left: 150px; padding: 40px;">
+    <div class="container mt-4">
+        <h1>Dashboard Empleado</h1>
+    </div>
+</div>
+
+
+<div class="main-content" style="margin-left: 250px; overflow-x: auto; overflow-y: hidden;">
+
+    @if (TempData["WelcomeAlert"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <strong>@TempData["WelcomeAlert"]</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Información de Sesión</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Nombre:</strong> @User.FindFirst(ClaimTypes.Name)?.Value</p>
+            @* <p><strong>Usuario:</strong> @User.FindFirst("Usuario")?.Value</p> *@
+            <p><strong>Departamento:</strong> @User.FindFirst("Departamento")?.Value</p>
+            <p><strong>No. Empleado:</strong> @User.FindFirst("Id_empleado")?.Value</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Mis Solicitudes</h5>
+                    <p class="card-text">Gestiona tus solicitudes aquí.</p>
+                    <a asp-area="" asp-controller="Empleado" asp-action="MisSolicitudes" class="btn btn-primary">Ver
+                        Solicitudes</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Nueva Solicitud</h5>
+                    <p class="card-text">Crea una nueva solicitud.</p>
+                    <a asp-area="" asp-controller="Empleado" asp-action="NuevaSolicitud" class="btn btn-success">Crear
+                        Solicitud</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

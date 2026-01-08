@@ -1,0 +1,89 @@
+﻿@model IEnumerable<WebApp.Models.Solicitudes.Solicitud>
+@using System.Security.Claims
+@{
+    Layout = "_LayoutEmpleado";
+    ViewData["Title"] = "Mis Solicitudes";
+    var contador = 1; 
+}
+
+<div class="main-content" style="margin-left: 150px; padding: 40px;">
+    <div class="container mt-4">
+        <h1>Mis Solicitudes</h1>
+        
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alert alert-@(TempData["TipoMensaje"]?.ToString() == "success" ? "success" : "danger")">
+                @TempData["Mensaje"]
+            </div>
+        }
+    </div>
+</div>
+
+<div class="main-content" style="margin-left: 250px; overflow-x: auto; overflow-y: hidden;">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Id Solicitud</th>
+                <th>Fecha</th>
+                <th>Departamento</th>
+                <th>Estado</th>
+                <th>Resolución</th>
+                <th>Solicitud</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderBy(s => s.fecha)) 
+            {
+                <tr>
+                    <td>#@contador</td> <td>@item.fecha.ToString("MMM dd yyyy")</td>
+                    <td>@item.departamentosolicitado</td>
+                    <td>
+                        @if (item.estadoSolicitud == "Aprobada")
+                        {
+                            <span class="badge bg-warning text-dark">En proceso</span> 
+                        }
+                        else if (item.estadoSolicitud == "Rechazada")
+                        {
+                            <span class="badge bg-primary">Finalizada</span> 
+                        }
+                        else if (item.estadoSolicitud == "En Revisión")
+                        {
+                            <span class="badge bg-info">En Revisión</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Recibido</span> 
+                        }
+                    </td>
+                    <td>
+                        @if (item.estadoSolicitud == "Aprobada")
+                        {
+                            <span class="badge bg-success">Aprobada </span>
+                        }
+                        else if (item.estadoSolicitud == "Rechazada")
+                        {
+                            <span class="badge bg-danger">Rechazada</span>
+                        }
+                        else if (item.estadoSolicitud == "En Revisión")
+                        {
+                            <span class="badge bg-info">En Revisión</span>
+                        }
+                        else if (item.estadoSolicitud == "Pendiente")
+                        {
+                            <form asp-action="EnviarSolicitud" method="post" style="display: inline;">
+                                <input type="hidden" name="idSolicitud" value="@item.idSolicitud" />
+                                <button type="submit" class="btn btn-primary btn-sm">Enviar a Jefe</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Pendiente</span>
+                        }
+                    </td>
+                    <td>@item.tipoSolicitud</td>
+                </tr>
+                contador++; 
+            }
+        </tbody>
+    </table>
+</div>

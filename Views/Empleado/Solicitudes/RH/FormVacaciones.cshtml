@@ -1,0 +1,71 @@
+﻿
+<div id="formVacaciones" class="tipo-form">
+    <br>
+    <hr>
+    <br>
+    <h5 class="mb-3 fw-bold">Vacaciones</h5>
+
+    <div class="mb-3 row">
+        <div class="col-md-6">
+            <label for="anioIngreso" class="form-label">Año de ingreso</label>
+            <input type="number" class="form-control" id="anioIngreso" name="anioIngreso" min="1900"
+                max="@DateTime.Now.Year" placeholder="Ej. 2015" required>
+        </div>
+        <div class="col-md-6">
+            <label for="diasVacaciones" class="form-label">Días solicitados</label>
+            <input type="number" class="form-control" id="diasVacaciones" name="diasVacaciones" min="1" required>
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <div class="col-md-6">
+            <label for="fechaInicio" class="form-label">Fecha de inicio</label>
+            <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+        </div>
+
+        <div class="col-md-6">
+            <label for="fechaRegreso" class="form-label">Fecha de regreso</label>
+            <input type="date" class="form-control" id="fechaRegreso" name="fechaRegreso" required>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="comentariosVacaciones" class="form-label">Motivo</label>
+        <textarea class="form-control" id="comentariosVacaciones" name="comentariosVacaciones" rows="3"
+            placeholder="Agregar algún detalle..."></textarea>
+    </div>
+</div>
+
+<div class="row text-center justify-content-center">      <div class="col-md-12">
+                <!-- Firma quien atendió -->
+      
+                    @* <div style="position: relative; display: inline-block;">
+                        <canvas id="firmaCanvasAtendio" width="400" height="200" style="border:1px solid #000;"></canvas>
+                        <button type="button" 
+                                class="btn btn-danger" 
+                                style="position: absolute; top: 5px; right: 5px; width: 30px; height: 30px; border-radius: 50%; padding: 0;"
+                                onclick="borrarFirma('firmaCanvasAtendio')">
+                            X
+                        </button>
+                    </div> 
+                    <input type="hidden" id="FirmaBase64Jefe" name="FirmaBase64Jefe" />
+                    <label class="col-form-label mt-2">EJECUTIVO QUE REALIZO LA VISITA Y RECOMIENDA</label>
+                </div>*@
+
+                <!-- Firma empleado -->
+             <div class="col-md-12">
+                    <div style="position: relative; display: inline-block;">
+                        <canvas id="firmaCanvasElaboro" width="400" height="200" style="border:1px solid #000;"></canvas>
+                        <button type="button" 
+                                class="btn btn-danger" 
+                                style="position: absolute; top: 5px; right: 5px; width: 30px; height: 30px; border-radius: 50%; padding: 0;"
+                                onclick="borrarFirma('firmaCanvasElaboro')">
+                            X
+                        </button>
+                    </div>
+                    <input type="hidden" id="FirmaBase64Elaboro" name="FirmaBase64Elaboro" />
+                   <div class="mb-3">
+            <label class="col-form-label mt-2">Firma Empleado</label>
+        </div>
+                </div>
+            </div> 

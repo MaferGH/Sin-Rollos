@@ -1,0 +1,162 @@
+@model WebApp.Models.Solicitudes.JefeDashboardViewModel // O el modelo que uses para las métricas detalladas
+
+@{
+    ViewData["Title"] = "Reportes Administrativos Detallados";
+    // Asegúrate de usar el Layout del Administrador
+    Layout = "_LayoutAdministrador"; 
+    
+    // Obtener datos del ViewBag (simulados o calculados en el Controller)
+    var departamentoActual = ViewBag.DepartamentoActual as string;
+    var fechaSeleccionada = ViewBag.FechaSeleccionada as string;
+    var listaDepartamentos = ViewBag.Departamentos as List<string>;
+    var tiempoPromedio = ViewBag.TiempoPromedioAprobacion as string;
+    var solicitudesAtrasadas = (int)ViewBag.SolicitudesAtrasadas;
+}
+
+<div class="container-fluid">
+    <div class="row mb-4 align-items-center">
+        <div class="col-8">
+            <h1 class="display-5">Reportes</h1>
+        </div>
+        <div class="col-4 text-end">
+            <a asp-action="DescargarReporteExcel" asp-route-departamento="@departamentoActual" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Generar Excel
+            </a>
+            <a asp-action="DescargarReportePDFDashboard" asp-route-departamento="@departamentoActual" class="btn btn-primary">
+                <i class="fas fa-file-pdf"></i> Generar PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <form asp-controller="Administrativo" asp-action="DashboardReporte" method="get">
+            <div class="row">
+                <div class="col-md-2 mb-3">
+                    <select class="form-select" disabled>
+                        <option selected>@fechaSeleccionada</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <select class="form-select" id="departamento" name="departamento" onchange="this.form.submit()">
+                        @if (listaDepartamentos != null)
+                        {
+                            @foreach (var depto in listaDepartamentos)
+                            {
+                                <option value="@depto" selected="@(depto == departamentoActual)">@depto</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card mb-4 shadow">
+        <div class="card-body">
+            <h4 class="card-title">Solicitudes por Hora</h4>
+            <div class="row mb-4 align-items-center">
+                <div class="col-md-3 text-center">
+                    <p class="h3">@Model.TotalSolicitudesGeneral</p>
+                    <p class="text-muted">Total de Solicitudes Recibidas</p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <p class="h3">@Model.TotalSolicitudesPendientes</p>
+                    <p class="text-muted">Total de Solicitudes Pendientes</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="text-muted me-3"><i class="fas fa-square" style="color: #ccc;"></i> SP</span>
+                    <span class="text-muted"><i class="fas fa-square" style="color: #007bff;"></i> SR</span>
+                </div>
+            </div>
+            
+            <div style="height: 300px;">
+                <canvas id="solicitudesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        
+        <div class="col-md-6 mb-4">
+            <div class="card text-white shadow" style="background-color: #3b5998;"> @* Usando un color azul similar al de la imagen *@
+                <div class="card-body">
+                    <h5 class="card-title">Tiempo Promedio de Aprobación</h5>
+                    <p class="display-6">@tiempoPromedio</p>
+                    <small class="text-white-50">Suma de Tiempos de Aprobación / Total de Solicitudes Aprobadas = Promedio de aprobación</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card text-white shadow" style="background-color: #3b5998;"> @* Usando un color azul similar al de la imagen *@
+                <div class="card-body">
+                    <h5 class="card-title">Solicitudes Vencidas</h5>
+                    <p class="display-6">@solicitudesAtrasadas Solicitudes Atrasadas</p>
+                    <small class="text-white-50">Tiempo Transcurrido > X Horas / Total Solicitud Atrasada</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('solicitudesChart').getContext('2d');
+            
+            // Datos inyectados desde el Controller (ViewBag)
+            const labels = @Html.Raw(Json.Serialize(ViewBag.ChartLabels));
+            const dataSR = @Html.Raw(Json.Serialize(ViewBag.DataSR));
+            const dataSP = @Html.Raw(Json.Serialize(ViewBag.DataSP));
+
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'SR',
+                        data: dataSR,
+                        borderColor: '#007bff', // Línea Azul (Recibidas)
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        fill: false,
+                        tension: 0.4,
+                        borderWidth: 2
+                    }, {
+                        label: 'SP',
+                        data: dataSP,
+                        borderColor: '#ccc', // Línea Gris (Pendientes)
+                        backgroundColor: 'rgba(204, 204, 204, 0.1)',
+                        fill: false,
+                        tension: 0.4,
+                        borderDash: [5, 5], // Si quieres una línea punteada/discontinua
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        },
+                        x: {
+                            grid: {
+                                display: false // Oculta líneas verticales
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // Oculta la leyenda dentro del gráfico, usamos la leyenda manual
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

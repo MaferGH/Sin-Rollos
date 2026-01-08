@@ -1,0 +1,79 @@
+﻿@model IEnumerable<WebApp.Models.Solicitudes.Solicitud>
+@{
+    Layout = "_LayoutJefe";
+    ViewData["Title"] = "Historial";
+    var solicitudes = Model ?? new List<WebApp.Models.Solicitudes.Solicitud>();
+}
+
+<div class="main-content" style="margin-left: 200px;">
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>Historial</h1>
+            <span class="badge bg-primary fs-6">@solicitudes.Count() Resultados</span>
+        </div>
+    </div>
+</div>
+
+<div class="main-content" style="margin-left: 250px; overflow-x: auto; overflow-y: hidden;">
+    @if (!solicitudes.Any())
+    {
+        <div class="alert alert-info">
+            <h4>No hay solicitudes finalizadas</h4>
+            <p>No hay solicitudes aprobadas o rechazadas en el historial.</p>
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Id Solicitud</th>
+                    <th>Fecha Creación</th>
+                    <th>Empleado</th>
+                    <th>Departamento</th> 
+                    <th>Tipo Solicitud</th> 
+                    <th>Estado Final</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in solicitudes)
+                {
+                    <tr id="row-@item.idSolicitud">
+                        <td>#@item.idSolicitud</td>
+                        <td>@item.fechaCreacion.ToString("MMM dd, h:mm tt")</td>
+                        <td>@item.nombreEmpleado</td>
+                        <td>@item.departamentodelempleado</td> 
+                        <td>
+                            <span class="badge bg-info">@item.tipoSolicitud</span>
+                        </td>
+                        <td>
+                            @{
+                                // El item.tipoSolicitud contiene el estado final en este contexto
+                                var badgeClass = item.estadoSolicitud == "Aprobada" ? "bg-success" : "bg-danger";
+                            }
+                            <span class="badge @badgeClass">@item.estadoSolicitud</span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                @* Solo se muestra el botón de Visualizar en el historial *@
+                                <form asp-action="VisualizarSolicitud" method="post" style="display: inline;">
+                                    <input type="hidden" name="idSolicitud" value="@item.idSolicitud" />
+                                    <button type="submit" class="btn btn-sm" title="Ver Detalles">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            class="bi bi-eye text-dark hover:text-warning" viewBox="0 0 16 16">
+                                            <path
+                                                d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                                            <path
+                                                d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

@@ -1,0 +1,38 @@
+﻿@model WebApp.Models.Usuario
+
+@{
+    Layout = "_LayoutLogin";
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<div class="login-form-content">
+    <h2 class="text-center">INICIAR SESION</h2>
+
+    <form asp-action="Index" method="post">
+        <div class="input-group-custom">
+            <span class="icon"><i class="fas fa-user"></i></span>
+            <input asp-for="usuario" type="text" class="form-control" placeholder="Usuario" aria-label="Usuario" />
+            <span asp-validation-for="usuario" class="text-danger"></span>
+        </div>
+
+        <div class="input-group-custom">
+            <span class="icon"><i class="fas fa-lock"></i></span>
+            <input asp-for="password" type="password" class="form-control" placeholder="Contraseña" aria-label="Contraseña" />
+            <span class="icon" style="left: auto; right: 15px; cursor: pointer;"></span>
+            <span asp-validation-for="password" class="text-danger"></span>
+        </div>
+        
+        @* <a href="#" class="terms-link">Términos y Condiciones</a> *@
+
+        <button type="submit" class="btn btn-primary w-100 btn-ingresar">Ingresar</button>
+
+        <a href="mailto:solicita@ejemplo.com?subject=Olvide%20contraseña%20de%20sistema%20Solicita&body=Hola,%20he%20olvidado%20mi%20contraseña,%20mi%20usuario%20es: [Adjunta Usuario]"
+            class="forgot-password-link">
+            ¿Olvidaste tu contraseña?
+        </a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

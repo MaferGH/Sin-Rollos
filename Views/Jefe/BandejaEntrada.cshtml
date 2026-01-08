@@ -1,0 +1,146 @@
+﻿@using System.Security.Claims
+@{
+    Layout = "_LayoutJefe";
+    ViewData["Title"] = "Bandeja de Entrada";
+}
+
+<style>
+    .nav-tabs-custom { border-bottom: 2px solid #eee; margin-bottom: 20px; }
+    .nav-link-active { 
+        color: #4a6cf7; font-weight: 600; padding: 10px 0; 
+        border-bottom: 3px solid #4a6cf7; display: inline-block;
+    }
+    
+    .table-container { background: white; border-radius: 8px; }
+    .table thead th { color: #8a92a6; font-weight: 500; border: none; padding: 15px; }
+    .table tbody td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #f1f4f9; }
+
+    .avatar {
+        width: 45px; height: 45px; background-color: #a5adc1; color: white;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-weight: bold; margin-right: 15px;
+    }
+
+    .btn-action { background: none; border: none; color: #4a6cf7; font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
+    .btn-action:hover { opacity: 0.7; }
+    .btn-delete { color: #a5adc1; }
+    .btn-delete:hover { color: #dc3545; }
+
+    .results-text { text-align: right; color: #8a92a6; margin-top: 15px; font-size: 0.9rem; }
+
+    .modal-content { border-radius: 15px; border: none; }
+    .modal-header { border-bottom: 1px solid #f1f4f9; }
+</style>
+
+<div class="main-content" style="margin-left: 200px;">
+    <div class="container mt-4">
+        <h1 class="fw-bold mb-4">Bandeja de entrada</h1>
+
+        
+
+        <div class="table-container">
+            <table class="table" id="tablaSolicitudes">
+                <thead>
+                    <tr>
+                        <th>Empleado</th>
+                        <th>Solicitud</th>
+                        <th>Fecha</th>
+                        <th>Departamento</th>
+                        <th class="text-center">Ver solicitud</th>
+                        <th class="text-center">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="fila-1">
+                        <td><div class="d-flex align-items-center"><div class="avatar">AQ</div> <strong>Antonio Quezada</strong></div></td>
+                        <td>Vacaciones</td>
+                        <td>May 5, 5:20 PM</td>
+                        <td>Sistemas</td>
+                        <td class="text-center"><button onclick="ver('Antonio Quezada', 'Sistemas', 'Vacaciones', '10 días')" class="btn-action"><i class="bi bi-eye"></i></button></td>
+                        <td class="text-center"><button onclick="borrar('fila-1')" class="btn-action btn-delete"><i class="bi bi-trash"></i></button></td>
+                    </tr>
+                    <tr id="fila-2">
+                        <td><div class="d-flex align-items-center"><div class="avatar">KB</div> <strong>Kevin Barranco</strong></div></td>
+                        <td>Incapacidad</td>
+                        <td>May 5, 5:53 PM</td>
+                        <td>Contabilidad</td>
+                        <td class="text-center"><button onclick="ver('Kevin Barranco', 'Contabilidad', 'Incapacidad', '3 días')" class="btn-action"><i class="bi bi-eye"></i></button></td>
+                        <td class="text-center"><button onclick="borrar('fila-2')" class="btn-action btn-delete"><i class="bi bi-trash"></i></button></td>
+                    </tr>
+                    <tr id="fila-3">
+                        <td><div class="d-flex align-items-center"><div class="avatar">LT</div> <strong>Luis Tovar</strong></div></td>
+                        <td>Vacaciones</td>
+                        <td>May 5, 6:26 PM</td>
+                        <td>Calidad</td>
+                        <td class="text-center"><button onclick="ver('Luis Tovar', 'Calidad', 'Vacaciones', '5 días')" class="btn-action"><i class="bi bi-eye"></i></button></td>
+                        <td class="text-center"><button onclick="borrar('fila-3')" class="btn-action btn-delete"><i class="bi bi-trash"></i></button></td>
+                    </tr>
+                    <tr id="fila-4">
+                        <td><div class="d-flex align-items-center"><div class="avatar">KS</div> <strong>Karina Silva</strong></div></td>
+                        <td>Incapacidad</td>
+                        <td>May 5, 6:59 PM</td>
+                        <td>Recursos Humanos</td>
+                        <td class="text-center"><button onclick="ver('Karina Silva', 'Recursos Humanos', 'Incapacidad', '2 días')" class="btn-action"><i class="bi bi-eye"></i></button></td>
+                        <td class="text-center"><button onclick="borrar('fila-4')" class="btn-action btn-delete"><i class="bi bi-trash"></i></button></td>
+                    </tr>
+                    <tr id="fila-5">
+                        <td><div class="d-flex align-items-center"><div class="avatar">SV</div> <strong>Sofía de la Vega</strong></div></td>
+                        <td>Vacaciones</td>
+                        <td>May 6, 7:32 AM</td>
+                        <td>Finanzas</td>
+                        <td class="text-center"><button onclick="ver('Sofía de la Vega', 'Finanzas', 'Vacaciones', '15 días')" class="btn-action"><i class="bi bi-eye"></i></button></td>
+                        <td class="text-center"><button onclick="borrar('fila-5')" class="btn-action btn-delete"><i class="bi bi-trash"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="results-text">5 Resultados</div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalVer" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Detalle de Solicitud</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="mb-1 text-muted small fw-bold">EMPLEADO</p>
+                <h5 id="vNom" class="mb-3"></h5>
+                <div class="row">
+                    <div class="col-6">
+                        <p class="mb-1 text-muted small fw-bold">DEPARTAMENTO</p>
+                        <p id="vDep"></p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-1 text-muted small fw-bold">TIPO</p>
+                        <p id="vTip"></p>
+                    </div>
+                    <div class="col-12">
+                        <p class="mb-1 text-muted small fw-bold">TIEMPO SOLICITADO</p>
+                        <p id="vDia" class="fw-bold text-primary"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ver(nombre, depto, tipo, dias) {
+        document.getElementById('vNom').innerText = nombre;
+        document.getElementById('vDep').innerText = depto;
+        document.getElementById('vTip').innerText = tipo;
+        document.getElementById('vDia').innerText = dias;
+        new bootstrap.Modal(document.getElementById('modalVer')).show();
+    }
+
+    function borrar(idFila) {
+        if(confirm("¿Seguro que quieres eliminar esta solicitud?")) {
+            document.getElementById(idFila).remove();
+        }
+    }
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

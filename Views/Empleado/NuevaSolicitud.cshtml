@@ -1,0 +1,231 @@
+﻿@using System.Security.Claims
+@{
+    Layout = "_LayoutEmpleado";
+    ViewData["Title"] = "Nueva Solicitud";
+}
+
+<div class="main-content" style="margin-left: 150px; padding: 40px;">
+    <div class="container mt-4">
+        <h1>Nueva solicitud</h1>
+    </div>
+</div>
+
+<div class="main-content" style="margin-left: 250px; overflow-x: auto; overflow-y: hidden;">
+    <div class="card shadow">
+        <div class="card-body">
+            <form id="solicitudForm" method="post" asp-action="GuardarSolicitud" asp-controller="Solicitudes">
+                <div class="mb-3 row">
+                    <div class="col-md-6">
+                        <label for="nombreEmpleado" class="form-label">Nombre del Empleado</label>
+                        <input type="text" class="form-control text-center" id="nombreEmpleado" name="nombreEmpleado"
+                            value="@User.FindFirst(ClaimTypes.Name)?.Value" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="numeroEmpleado" class="form-label">Número de Empleado</label>
+                        <input type="number" class="form-control text-center" id="numeroEmpleado" name="numeroEmpleado"
+                            value="@User.FindFirst("Id_empleado")?.Value" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col-md-6">
+                        <label for="fechaSolicitud" class="form-label">Fecha de Realización</label>
+                        <input type="date" class="form-control text-center" name="fecha" id="fecha"
+                            value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="departamentodelempleado" class="form-label">Departamento</label>
+                        <input type="text" class="form-control text-center" id="departamentodelempleado"
+                            name="departamentodelempleado" value="@User.FindFirst("Departamento")?.Value" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col-md-6">
+                        <label for="departamentosolicitado" class="form-label">Departamento al que quiere realizar
+                            solicitud</label>
+                        <select class="form-select" id="departamentosolicitado" name="departamentosolicitado" required>
+                            <option value="" selected disabled>Selecciona departamento</option>
+                            <option value="Recursos Humanos">Recursos Humanos</option>
+                            <option value="Sistemas">Sistemas</option>
+                            <option value="Desarrollo">Desarrollo</option>
+                            <option value="Contabilidad">Contabilidad</option>
+                            <option value="Nóminas">Nóminas</option>
+                            <option value="Compras">Compras</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tipoSolicitud" class="form-label">Tipo de Solicitud</label>
+                        <select class="form-select" id="tipoSolicitud" name="tipoSolicitud" required>
+                            <option value="" selected disabled>Selecciona tipo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="formContainer"></div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    const tiposSolicitud = {
+        "Recursos Humanos": ["Vacaciones", "Permisos", "Quejas laborales", "Cambio de turno", "Renuncia voluntaria"],
+        "Sistemas": ["Solicitud de equipo", "Instalación software", "Acceso a sistemas", "Conexión a red", "Respaldo y recuperación de datos", "Incidencias"],
+        "Desarrollo": ["Solicitud de nuevo desarrollo", "Cambios en sistemas", "Pruebas de staging", "Corrección de errores"],
+        "Contabilidad": ["Comprobantes fiscales", "Reembolsos", "Reporte financieros", "Conciliaciones contables", "Autorización de pagos a proveedores"],
+        "Nóminas": ["Solicitud de recibos de pago", "Ajustes de salario", "Corrección de deducciones o retenciones", "Solicitud de pagos extraordinarios", "Consultas sobre prestaciones o aguinaldo"],
+        "Compras": ["Solicitud de cotización", "Requisición de materiales o insumos", "Compra de equipo o servicios"]
+    };
+
+    const departamentosolicitadoSelect = document.getElementById('departamentosolicitado');
+    const tipoSelect = document.getElementById('tipoSolicitud');
+    const formContainer = document.getElementById('formContainer');
+
+    departamentosolicitadoSelect.addEventListener('change', () => {
+        tipoSelect.innerHTML = '<option value="" selected disabled>Selecciona tipo</option>';
+        tiposSolicitud[departamentosolicitadoSelect.value].forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            tipoSelect.appendChild(opt);
+        });
+    });
+
+    tipoSelect.addEventListener('change', () => {
+        formContainer.innerHTML = '';
+
+        if (tipoSelect.value === 'Vacaciones') {
+            fetch('@Url.Action("FormVacaciones", "Solicitudes")')
+                .then(response => response.text())
+                .then(html => {
+                    formContainer.innerHTML = html;
+
+                    formContainer.innerHTML += `
+    <div class="d-flex justify-content-center mt-4 mb-4">
+        <button type="button" id="btnGuardarVacaciones" class="btn btn-primary">
+            Guardar Solicitud de Vacaciones
+        </button>
+    </div>`;
+
+                    function inicializarCanvas(canvasId) {
+                        const canvas = document.getElementById(canvasId);
+                        const ctx = canvas.getContext("2d");
+                        let pintando = false;
+
+                        function getPosicion(event) {
+                            const rect = canvas.getBoundingClientRect();
+                            if (event.touches && event.touches.length > 0) {
+                                return {
+                                    x: event.touches[0].clientX - rect.left,
+                                    y: event.touches[0].clientY - rect.top
+                                };
+                            } else {
+                                return {
+                                    x: event.clientX - rect.left,
+                                    y: event.clientY - rect.top
+                                };
+                            }
+                        }
+
+                        function empezarDibujo(e) {
+                            e.preventDefault();
+                            pintando = true;
+                            const pos = getPosicion(e);
+                            ctx.beginPath();
+                            ctx.moveTo(pos.x, pos.y);
+                        }
+
+                        function terminarDibujo(e) {
+                            e.preventDefault();
+                            pintando = false;
+                            ctx.beginPath();
+                        }
+
+                        function dibujar(e) {
+                            e.preventDefault();
+                            if (!pintando) return;
+                            const pos = getPosicion(e);
+                            ctx.lineWidth = 2;
+                            ctx.lineCap = "round";
+                            ctx.strokeStyle = "black";
+                            ctx.lineTo(pos.x, pos.y);
+                            ctx.stroke();
+                            ctx.beginPath();
+                            ctx.moveTo(pos.x, pos.y);
+                        }
+
+                        canvas.addEventListener("mousedown", empezarDibujo);
+                        canvas.addEventListener("mouseup", terminarDibujo);
+                        canvas.addEventListener("mouseout", terminarDibujo);
+                        canvas.addEventListener("mousemove", dibujar);
+
+                        canvas.addEventListener("touchstart", empezarDibujo);
+                        canvas.addEventListener("touchend", terminarDibujo);
+                        canvas.addEventListener("touchcancel", terminarDibujo);
+                        canvas.addEventListener("touchmove", dibujar);
+                    }
+
+                    inicializarCanvas("firmaCanvasElaboro");
+
+                    document.getElementById('btnGuardarVacaciones').addEventListener('click', function () {
+                        GuardarVacaciones();
+                    });
+                });
+        }
+    });
+
+    function borrarFirma(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function GuardarVacaciones() {
+        const form = document.getElementById('solicitudForm');
+
+        const requiredGeneral = form.querySelectorAll('input[required], select[required], textarea[required]');
+        for (const input of requiredGeneral) {
+            if (!input.value) {
+                alert('Por favor llena todos los campos obligatorios del formulario general.');
+                input.focus();
+                return;
+            }
+        }
+
+        const formVacaciones = document.getElementById('formVacaciones');
+        if (formVacaciones) {
+            const requiredVacaciones = formVacaciones.querySelectorAll('input[required], select[required], textarea[required]');
+            for (const input of requiredVacaciones) {
+                if (!input.value) {
+                    alert('Por favor llena todos los campos obligatorios del formulario de vacaciones.');
+                    input.focus();
+                    return;
+                }
+            }
+        }
+
+        const canvasElaboro = document.getElementById("firmaCanvasElaboro");
+
+        if (canvasElaboro) {
+            document.getElementById("FirmaBase64Elaboro").value = canvasElaboro.toDataURL("image/png");
+        }
+
+
+        const formData = new FormData(form);
+        fetch('@Url.Action("GuardarVacaciones", "FormVacaciones")', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = '@Url.Action("MisSolicitudes", "Empleado")';
+                }
+            })
+            .catch(error => {
+                alert('Error en la solicitud: ' + error);
+            });
+    }
+</script>

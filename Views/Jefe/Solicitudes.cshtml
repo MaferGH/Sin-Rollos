@@ -1,0 +1,419 @@
+﻿@model IEnumerable<WebApp.Models.Solicitudes.Solicitud>
+@{
+    Layout = "_LayoutJefe";
+    ViewData["Title"] = "Solicitudes";
+    var solicitudes = Model ?? new List<WebApp.Models.Solicitudes.Solicitud>();
+}
+
+<div class="main-content" style="margin-left: 200px;">
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>Solicitudes</h1>
+            <span class="badge bg-primary fs-6">@solicitudes.Count() Resultados</span>
+        </div>
+
+        @* Zona de Notificaciones de Redirección *@
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alert alert-@(TempData["TipoMensaje"]?.ToString() == "success" ? "success" : "danger")">
+                @TempData["Mensaje"]
+            </div>
+        }
+    </div>
+</div>
+
+<div class="main-content" style="margin-left: 250px; overflow-x: auto; overflow-y: hidden;">
+    @if (!solicitudes.Any())
+    {
+        <div class="alert alert-info">
+            <h4>No hay solicitudes pendientes</h4>
+            <p>No hay solicitudes de tus empleados directos en este momento.</p>
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Id Solicitud</th>
+                    <th>Fecha</th>
+                    <th>Empleado</th>
+                    <th>Departamento</th> 
+                    <th>Solicitud</th>
+                    <th>Tiempo de espera</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in solicitudes)
+                {
+                    // Lógica para detener el timer (Punto 4)
+                    var estadoSolicitudado = item.estadoSolicitud == "Aprobada" || item.estadoSolicitud == "Rechazada";
+
+                    var tiempoEspera = DateTime.Now - item.fechaCreacion;
+                    var horas = tiempoEspera.Hours;
+                    var minutos = tiempoEspera.Minutes;
+                    var segundos = tiempoEspera.Seconds;
+
+                    @* ID de la fila para eliminación por JS *@
+                    <tr id="row-@item.idSolicitud">
+                        <td>#@item.idSolicitud</td>
+                        <td>@item.fechaCreacion.ToString("MMM dd, h:mm tt")</td>
+                        <td>@item.nombreEmpleado</td>
+                        <td>@item.departamentodelempleado</td> 
+
+
+                        <td>
+                            <span class="badge bg-info">@item.tipoSolicitud</span>
+                        </td>
+                        
+                        <td>
+
+                            @if (estadoSolicitudado)
+                            {
+                                <span class="text-success fw-bold">Finalizada</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">@horas.ToString("00") hrs : @minutos.ToString("00") min :
+                                    @segundos.ToString("00") seg</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                @if (!estadoSolicitudado)
+                                {
+                                    @* BOTÓN APROBAR: Abre el modal y pasa el ID *@
+                                    <button type="button" class="btn btn-sm" title="Aprobar" data-bs-toggle="modal"
+                                            data-bs-target="#aprobarModal" data-id-solicitud="@item.idSolicitud">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green"
+                                            class="bi bi-check-circle" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                            <path
+                                                d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05" />
+                                        </svg>
+                                    </button>
+
+                                    @* BOTÓN RECHAZAR: Abre el modal y pasa el ID *@
+                                    <button type="button" class="btn btn-sm" title="Rechazar" data-bs-toggle="modal"
+                                            data-bs-target="#rechazarModal" data-id-solicitud="@item.idSolicitud">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red"
+                                            class="bi bi-x-circle" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                            <path
+                                                d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                                        </svg>
+                                    </button>
+                                }
+
+                                @* Visualizar *@
+                                <form asp-action="VisualizarSolicitud" method="post" style="display: inline;">
+                                    <input type="hidden" name="idSolicitud" value="@item.idSolicitud" />
+                                    <button type="submit" class="btn btn-sm" title="Ver">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            class="bi bi-eye text-dark hover:text-warning" viewBox="0 0 16 16">
+                                            <path
+                                                d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                                            <path
+                                                d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+---
+
+@* MODALES DE APROBACIÓN Y RECHAZO *@
+
+<div class="modal fade" id="aprobarModal" tabindex="-1" aria-labelledby="aprobarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="aprobarForm"> 
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aprobarModalLabel">✅ Aprobar Solicitud</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="idSolicitud" id="aprobarIdSolicitud" />
+
+                    <div class="mb-3">
+                        <label for="aprobarMotivo" class="form-label">Motivo de Aprobación:</label>
+                        <textarea class="form-control" id="aprobarMotivo" name="motivo" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Firma (Usar el ratón/táctil para firmar):</label>
+                        <div style="border: 1px solid #ced4da; border-radius: 0.25rem;">
+                            <canvas id="aprobarSignatureCanvas" width="450" height="150" style="display: block;"></canvas>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1" id="aprobarClearCanvas">Borrar Firma</button>
+                        <input type="hidden" name="firma" id="aprobarFirmaBase64" required /> 
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success btn-confirmar-aprobacion">Confirmar Aprobación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="rechazarModal" tabindex="-1" aria-labelledby="rechazarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="rechazarForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rechazarModalLabel">❌ Rechazar Solicitud</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="idSolicitud" id="rechazarIdSolicitud" />
+
+                    <div class="mb-3">
+                        <label for="rechazarMotivo" class="form-label">Motivo de Rechazo:</label>
+                        <textarea class="form-control" id="rechazarMotivo" name="motivo" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Firma (Usar el ratón/táctil para firmar):</label>
+                        <div style="border: 1px solid #ced4da; border-radius: 0.25rem;">
+                            <canvas id="rechazarSignatureCanvas" width="450" height="150" style="display: block;"></canvas>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1" id="rechazarClearCanvas">Borrar Firma</button>
+                        <input type="hidden" name="firma" id="rechazarFirmaBase64" required />
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger btn-confirmar-rechazo">Confirmar Rechazo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* --- *@
+
+
+@section Scripts {
+
+    <script>
+    // URLs de las acciones del controlador (generadas por Razor)
+    const aprobarUrl = '@Url.Action("AprobarSolicitud", "Jefe")';
+    const rechazarUrl = '@Url.Action("RechazarSolicitud", "Jefe")';
+
+    // Función para mostrar mensajes de alerta
+    function showNotification(message, type = 'success') {
+        const container = document.querySelector('.container.mt-4');
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        const existingAjaxAlert = container.querySelector('.alert-dismissible');
+        if (existingAjaxAlert) {
+            existingAjaxAlert.remove();
+        }
+
+        const h1 = container.querySelector('h1');
+        h1.insertAdjacentHTML('afterend', alertHtml);
+
+        setTimeout(() => {
+            const alertElement = container.querySelector('.alert-dismissible');
+            if (alertElement) {
+                // Intenta obtener la instancia o usar el método de Bootstrap
+                const bsAlert = bootstrap.Alert.getInstance(alertElement) || new bootstrap.Alert(alertElement);
+                bsAlert.close();
+            }
+        }, 5000);
+    }
+
+    function setupSignatureCanvas(canvasId, clearButtonId, formId, hiddenInputId) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        const form = document.getElementById(formId);
+        const hiddenInput = document.getElementById(hiddenInputId);
+        const clearButton = document.getElementById(clearButtonId);
+
+        let drawing = false;
+
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000000';
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseleave', stopDrawing);
+
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e.touches[0]); });
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            // Manejo de eventos de ratón y táctil
+            const clientX = e.clientX || (e.touches && e.touches.length > 0 ? e.touches[0].clientX : 0);
+            const clientY = e.clientY || (e.touches && e.touches.length > 0 ? e.touches[0].clientY : 0);
+
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        function startDrawing(e) {
+            drawing = true;
+            const pos = getMousePos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+            const pos = getMousePos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            drawing = false;
+        }
+
+        clearButton.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            hiddenInput.value = ''; 
+        });
+        
+        function isCanvasBlank(canvas) {
+            // Verifica si el canvas está completamente en blanco
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            return !data.some(channel => channel !== 0); 
+        }
+
+        form.prepareData = function() {
+            if (isCanvasBlank(canvas)) {
+                alert("Por favor, escriba su firma antes de continuar.");
+                return false;
+            }
+            hiddenInput.value = canvas.toDataURL('image/png');
+            return true;
+        }
+    }
+
+    // Función AJAX principal para manejar la aprobación/rechazo
+    async function processSolicitudAction(formId, actionUrl, modalId) {
+        const form = document.getElementById(formId);
+        
+        // 1. Validar firma y generar Base64. Si falla, detener la ejecución.
+        if (!form.prepareData()) {
+            return; 
+        }
+        
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch(actionUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error en la solicitud HTTP: ${response.status} ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            
+            // 3. Mostrar mensaje
+            showNotification(result.message, result.success ? 'success' : 'danger');
+
+            // 4. Eliminar la fila si fue exitoso y REDIRIGIR A HISTORIAL
+            if (result.success && result.id) {
+                const row = document.getElementById(`row-${result.id}`);
+                if (row) {
+                    // Animación de desvanecimiento
+                    row.style.transition = 'opacity 0.5s ease-out';
+                    row.style.opacity = '0';
+                    setTimeout(() => {
+                        row.remove();
+                        
+                        window.location.href = '@Url.Action("Historial", "Jefe")';
+
+                    }, 500); 
+                } else {
+                    // Fallback de redirección si no se encuentra la fila (ej. ya estaba eliminada)
+                    setTimeout(() => {
+                        window.location.href = '@Url.Action("Historial", "Jefe")';
+                    }, 1000); 
+                }
+            }
+        } catch (error) {
+            // Mostrar mensaje de error de la conexión/servidor
+            showNotification(`Error de proceso: ${error.message}`, 'danger');
+        } finally {
+            const modalElement = document.getElementById(modalId);
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            
+            if (modalInstance) {
+                modalInstance.hide();
+            } else if (modalElement) {
+                modalElement.classList.remove('show');
+                modalElement.setAttribute('aria-hidden', 'true');
+                modalElement.style.display = 'none';
+                
+                document.body.classList.remove('modal-open');
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) backdrop.remove();
+            }
+        }
+    }
+
+    // Inicialización de Canvas y Eventos
+    setupSignatureCanvas('aprobarSignatureCanvas', 'aprobarClearCanvas', 'aprobarForm', 'aprobarFirmaBase64');
+    document.querySelector('.btn-confirmar-aprobacion').addEventListener('click', () => {
+        processSolicitudAction('aprobarForm', aprobarUrl, 'aprobarModal');
+    });
+
+    setupSignatureCanvas('rechazarSignatureCanvas', 'rechazarClearCanvas', 'rechazarForm', 'rechazarFirmaBase64');
+    document.querySelector('.btn-confirmar-rechazo').addEventListener('click', () => {
+        processSolicitudAction('rechazarForm', rechazarUrl, 'rechazarModal');
+    });
+
+    
+    // Modal de Aprobación
+    const aprobarModal = document.getElementById('aprobarModal');
+    aprobarModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget; 
+        const idSolicitud = button.getAttribute('data-id-solicitud');
+
+        aprobarModal.querySelector('#aprobarIdSolicitud').value = idSolicitud;
+        aprobarModal.querySelector('#aprobarMotivo').value = '';
+        document.getElementById('aprobarClearCanvas').click(); 
+    });
+
+    // Modal de Rechazo
+    const rechazarModal = document.getElementById('rechazarModal');
+    rechazarModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget; 
+        const idSolicitud = button.getAttribute('data-id-solicitud');
+
+        rechazarModal.querySelector('#rechazarIdSolicitud').value = idSolicitud;
+        rechazarModal.querySelector('#rechazarMotivo').value = '';
+        document.getElementById('rechazarClearCanvas').click(); 
+    });
+</script>
+}

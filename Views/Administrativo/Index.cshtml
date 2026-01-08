@@ -1,0 +1,400 @@
+﻿@model WebApp.Models.Solicitudes.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard | Administración";
+    Layout = "_LayoutAdministrador";
+}
+
+<div class="container mt-4 dashboard-panel">
+
+    <header class="mb-4 text-center">
+        <h2 class="fw-bold text-dark mb-1 display-6">
+            <i class="bi bi-speedometer2 text-primary me-2"></i>Dashboard Administrativo
+        </h2>
+        <p class="text-muted">Visión general del rendimiento operativo y estado del sistema</p>
+    </header>
+
+    <div class="row g-4 mt-3">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card metric-card shadow-sm border-0 text-center">
+                <div class="metric-icon-lg bg-success text-white shadow-sm">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <div class="card-body">
+                    <span class="metric-label">Tasa de Aprobación</span>
+                    <h2 class="metric-value">@Model.TasaAprobacionGlobal.ToString("F1")%</h2>
+                    <span class="metric-footer text-success">
+                        <i class="bi bi-arrow-up-right-circle"></i> Sobre solicitudes finalizadas
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card metric-card shadow-sm border-0 text-center">
+                <div class="metric-icon-lg bg-primary text-white shadow-sm">
+                    <i class="bi bi-collection"></i>
+                </div>
+                <div class="card-body">
+                    <span class="metric-label">Total Solicitudes</span>
+                    <h2 class="metric-value">@Model.TotalSolicitudesGeneral</h2>
+                    <span class="metric-footer text-primary">
+                        <i class="bi bi-database-fill"></i> Registros actuales
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card metric-card shadow-sm border-0 text-center">
+                <div class="metric-icon-lg bg-danger text-white shadow-sm">
+                    <i class="bi bi-exclamation-octagon"></i>
+                </div>
+                <div class="card-body">
+                    <span class="metric-label">Pendientes Activas</span>
+                    <h2 class="metric-value text-danger">@Model.TotalSolicitudesPendientes</h2>
+                    <span class="metric-footer text-danger">
+                        <i class="bi bi-alarm-fill"></i> Requieren atención
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card metric-card shadow-sm border-0 text-center">
+                <div class="metric-icon-lg bg-info text-white shadow-sm">
+                    <i class="bi bi-stopwatch"></i>
+                </div>
+
+                <div class="card-body">
+                    <span class="metric-label">Tiempo Promedio</span>
+                    @{
+                        var avgTime = Model.TiemposPorDepartamento.Any()
+                            ? Model.TiemposPorDepartamento.Average(d => d.TiempoPromedioHoras)
+                            : 0;
+                    }
+                    <h2 class="metric-value text-info">@avgTime.ToString("F2")h</h2>
+                    <span class="metric-footer text-info">
+                        <i class="bi bi-clock-history"></i> Gestión global
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <section class="mt-5">
+        <h4 class="fw-bold text-dark mb-4 text-center">
+            <i class="bi bi-bar-chart-line text-primary me-1"></i>
+            Análisis Operativo
+        </h4>
+
+        <div class="row g-4">
+
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-0 fw-semibold">
+                        <i class="bi bi-building me-1 text-primary"></i>
+                        Tiempo Promedio por Departamento
+                    </div>
+                    <div class="card-body">
+                        <canvas id="deptTimeChart" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-0 fw-semibold">
+                        <i class="bi bi-pie-chart-fill me-1 text-primary"></i>
+                        Distribución por Tipo de Solicitud
+                    </div>
+                    <div class="card-body">
+                        <canvas id="typeDistributionChart" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 📈 Tendencia Semanal mejorada -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-0 fw-semibold">
+                        <i class="bi bi-graph-up-arrow me-1 text-primary"></i>
+                        Tendencia Semanal
+                    </div>
+                    <div class="card-body">
+                        <canvas id="lineChartAdmin" class="chart-canvas-lg"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🟩🟥🟨 Distribución Estado Solicitud mejorada -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-0 fw-semibold">
+                        <i class="bi bi-bar-chart-fill me-1 text-primary"></i>
+                        Distribución por Estado de Solicitud
+                    </div>
+                    <div class="card-body">
+                        <canvas id="statusDistributionChart" class="chart-canvas-lg"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="mt-5 mb-5">
+        <h4 class="fw-bold text-dark mb-4 text-center">
+            <i class="bi bi-lightning-charge-fill text-warning me-1"></i>
+            Acciones Rápidas
+        </h4>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <a href="@Url.Action("Reportes", "Administrativo")" class="btn btn-primary btn-lg w-100 py-3 shadow-sm action-btn">
+                    <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>
+                    Generar Reporte
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="@Url.Action("Configuracion", "Administrativo")" class="btn btn-outline-secondary btn-lg w-100 py-3 shadow-sm action-btn">
+                    <i class="bi bi-gear-wide-connected me-2"></i>
+                    Configuración del Sistema
+                </a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+
+@section Scripts {
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const deptosData = @Html.Raw(Json.Serialize(Model.TiemposPorDepartamento.Select(d => new { label = d.NombreDepartamento, value = d.TiempoPromedioHoras })));
+    const tiposData = @Html.Raw(Json.Serialize(Model.TotalesPorTipoSolicitud));
+    const semanaTotales = @Html.Raw(Json.Serialize(Model.TotalesPorDiaSemana));
+    const semanaLabels = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+    const statusData = @Html.Raw(Json.Serialize(Model.TotalesPorEstadoSolicitud));
+
+
+    function generateColors(count) {
+        const colors = ['#0d6efd','#dc3545','#ffc107','#20c997','#6f42c1','#fd7e14','#17a2b8','#6610f2'];
+        return [...Array(count)].map((_, i) => colors[i % colors.length]);
+    }
+
+    // 🌐 --- Tiempo por Departamento ---
+    if (deptosData.length > 0) {
+        new Chart(document.getElementById("deptTimeChart"), {
+            type: 'bar',
+            data: {
+                labels: deptosData.map(x => x.label),
+                datasets: [{
+                    data: deptosData.map(x => x.value.toFixed(2)),
+                    backgroundColor: generateColors(deptosData.length),
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // 🍩 --- Distribución por Tipo ---
+    if (Object.keys(tiposData).length > 0) {
+        new Chart(document.getElementById("typeDistributionChart"), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(tiposData),
+                datasets: [{
+                    data: Object.values(tiposData),
+                    backgroundColor: generateColors(Object.keys(tiposData).length)
+                }]
+            },
+            options: { plugins: { legend: { position: "right" } } }
+        });
+    }
+
+    // 📈 --- Tendencia Semanal (MEJORADA) ---
+    const ctxLine = document.getElementById("lineChartAdmin").getContext("2d");
+    const gradient = ctxLine.createLinearGradient(0, 0, 0, 250);
+    gradient.addColorStop(0, "rgba(13,110,253,0.35)");
+    gradient.addColorStop(1, "rgba(13,110,253,0)");
+
+    new Chart(ctxLine, {
+        type: 'line',
+        data: {
+            labels: semanaLabels,
+            datasets: [{
+                label: "Total de Solicitudes",
+                data: semanaTotales,
+                fill: true,
+                tension: .35,
+                borderColor: "#0d6efd",
+                backgroundColor: gradient,
+                borderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                pointBackgroundColor: "#ffffff",
+                pointBorderColor: "#0d6efd",
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "#0d6efd",
+                    titleColor: "#fff",
+                    bodyColor: "#fff",
+                    padding: 12
+                },
+                title: {
+                    display: true,
+                    text: 'Solicitudes en los últimos 7 días',
+                    font: { size: 15, weight: '600' }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { precision: 0 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 🟩🟥🟨 --- Distribución por Estado (MEJORADA) ---
+    if (Object.keys(statusData).length > 0) {
+        const prettyColors = {
+            'Aprobada': 'rgba(25,135,84,.85)',
+            'Rechazada': 'rgba(220,53,69,.85)',
+            'Pendiente': 'rgba(255,193,7,.85)'
+        };
+
+        const labels = Object.keys(statusData);
+        const values = Object.values(statusData);
+        const backgroundColors = labels.map(l => prettyColors[l] || 'rgba(108,117,125,.85)');
+
+        new Chart(document.getElementById("statusDistributionChart"), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Total",
+                    data: values,
+                    backgroundColor: backgroundColors,
+                    borderRadius: 12,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: "#343a40",
+                        titleColor: "#fff",
+                        bodyColor: "#fff",
+                        padding: 10
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+</script>
+
+
+<style>
+
+/* ---- PANEL PRINCIPAL ---- */
+.dashboard-panel {
+    max-width: 1250px;
+}
+
+/* ---- MÉTRICAS ---- */
+.metric-card {
+    border-radius: 16px;
+    position: relative;
+    padding-top: 45px;
+    background: #fff;
+    transition: all .25s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0,0,0,.10);
+}
+
+.metric-icon-lg {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.metric-label {
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6c757d;
+}
+
+.metric-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 5px 0 4px 0;
+}
+
+.metric-footer {
+    font-size: .85rem;
+}
+
+/* ---- GRÁFICAS ---- */
+.chart-canvas { height: 260px !important; }
+.chart-canvas-lg { height: 330px !important; }
+
+/* ---- TARJETAS ---- */
+.card {
+    border-radius: 14px !important;
+    overflow: hidden;
+}
+
+.card-header {
+    font-size: 1rem;
+    padding: 15px 18px;
+    background: #f8f9fa !important;
+    border-bottom: 1px solid rgba(0,0,0,.06) !important;
+}
+
+/* ---- BOTONES ---- */
+.action-btn {
+    transition: .25s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-4px);
+}
+
+</style>
+
+}

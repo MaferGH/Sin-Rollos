@@ -1,0 +1,563 @@
+@using WebApp.Models.Solicitudes
+@model IEnumerable<Solicitud>
+
+@{
+    ViewData["Title"] = "Historial";
+    Layout = "_LayoutAdministrador";
+}
+
+<style>
+    .table-container-fixed {
+        max-height: 400px;
+        overflow-y: auto;
+        overflow-x: auto;
+        display: block;
+    }
+</style>
+
+<h1 class="mb-4">Historial</h1>
+<p class="text-muted">Consulta, filtra y descarga el historial de solicitudes internas completadas.</p>
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-light">
+        <h5>Filtros de Reporte</h5>
+    </div>
+    <div class="card-body">
+        <form asp-controller="Administrativo" asp-action="Reportes" method="get">
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label for="filtroDepartamento" class="form-label">Departamento</label>
+                    <select id="filtroDepartamento" name="departamento" class="form-select">
+                        <option value="">Todos los Departamentos</option>
+                        <option value="Ventas" selected="@(ViewBag.FiltroDepartamento == "Ventas")">Ventas</option>
+                        <option value="IT" selected="@(ViewBag.FiltroDepartamento == "IT")">IT</option>
+                        <option value="RRHH" selected="@(ViewBag.FiltroDepartamento == "RRHH")">Recursos Humanos</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="filtroTipo" class="form-label">Tipo de Solicitud</label>
+                    <select id="filtroTipo" name="tipoSolicitud" class="form-select">
+                        <option value="">Todos los Tipos</option>
+                        <option value="Viaticos" selected="@(ViewBag.FiltroTipo == "Viaticos")">Viáticos</option>
+                        <option value="Permiso" selected="@(ViewBag.FiltroTipo == "Permiso")">Permiso</option>
+                        <option value="Compra" selected="@(ViewBag.FiltroTipo == "Compra")">Compra de Equipo</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="filtroFechaInicio" class="form-label">Fecha Inicio</label>
+                    <input type="date" id="filtroFechaInicio" name="fechaInicio" value="@ViewBag.FiltroInicio"
+                        class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="filtroFechaFin" class="form-label">Fecha Fin</label>
+                    <input type="date" id="filtroFechaFin" name="fechaFin" value="@ViewBag.FiltroFin"
+                        class="form-control">
+                </div>
+
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-filter"></i> Filtrar Solicitudes
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mt-4">
+    <div class="card-body table-container-fixed">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo</th>
+                    <th>Departamento</th>
+                    <th>Estado</th>
+                    <th>Fecha Creación</th>
+                    <th>Fecha Finalización</th>
+                    <th>Tiempo Respuesta</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var solicitud in Model)
+                    {
+                        <tr>
+                            <td>@solicitud.idSolicitud</td>
+                            <td>@solicitud.tipoSolicitud</td>
+                            <td>@solicitud.departamentosolicitado</td>
+
+                            <td>
+                                <span
+                                    class="badge @(solicitud.estadoSolicitud == "Aprobada" ? "bg-success" :
+                                                                                        (solicitud.estadoSolicitud == "Rechazada" ? "bg-danger" : "bg-warning"))">
+                                    @solicitud.estadoSolicitud
+                                </span>
+                            </td>
+
+                            <td>@solicitud.fechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+
+                            <td>@(solicitud.fechaFinalizacion?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+
+                            <td><strong>@solicitud.TiempoDeRespuesta</strong></td>
+
+                            <td>
+                                <a asp-controller="Administrativo" asp-action="DescargarPDF"
+                                    asp-route-id="@solicitud.idSolicitud" class="btn btn-sm btn-info">
+                                    PDF
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">No se encontraron solicitudes.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- PAGINACIÓN -->
+<nav aria-label="Paginación" class="mt-3">
+    <ul class="pagination justify-content-center">
+
+        <li class="page-item @(ViewBag.Page <= 1 ? "disabled" : "")">
+            <a class="page-link" asp-route-page="@(ViewBag.Page - 1)"
+                asp-route-departamento="@ViewBag.FiltroDepartamento" asp-route-tipoSolicitud="@ViewBag.FiltroTipo"
+                asp-route-fechaInicio="@ViewBag.FiltroInicio" asp-route-fechaFin="@ViewBag.FiltroFin">
+                Anterior
+            </a>
+        </li>
+
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                <a class="page-link" asp-route-page="@i" asp-route-departamento="@ViewBag.FiltroDepartamento"
+                    asp-route-tipoSolicitud="@ViewBag.FiltroTipo" asp-route-fechaInicio="@ViewBag.FiltroInicio"
+                    asp-route-fechaFin="@ViewBag.FiltroFin">
+                    @i
+                </a>
+            </li>
+        }
+
+        <li class="page-item @(ViewBag.Page >= ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-route-page="@(ViewBag.Page + 1)"
+                asp-route-departamento="@ViewBag.FiltroDepartamento" asp-route-tipoSolicitud="@ViewBag.FiltroTipo"
+                asp-route-fechaInicio="@ViewBag.FiltroInicio" asp-route-fechaFin="@ViewBag.FiltroFin">
+                Siguiente
+            </a>
+        </li>
+
+    </ul>
+</nav>
+
+
+
+
+
+
+
+
+
+@* @using WebApp.Models.Solicitudes
+@model IEnumerable<Solicitud>
+
+@{
+    ViewData["Title"] = "Gestión de Reportes";
+    Layout = "_LayoutAdministrador";
+}
+
+<style>
+.table-container-fixed {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+    display: block;
+}
+
+.custom-date {
+    
+     width: 100%;
+}
+
+.custom-date-display span {
+    margin-top: 1px;
+}
+
+.custom-date-display {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+     padding: 10px 14px !important;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: .2s ease;
+}
+
+.custom-date-display:hover {
+    border-color: #007bff;
+    box-shadow: 0 0 0 4px rgba(0,123,255,0.10);
+}
+
+.custom-date-label {
+    position: absolute;
+    margin-left: 5px;
+    top: -10px;
+    left: 15px;
+    background: white;
+    padding: 0px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #007bff;
+    text-transform: uppercase;
+}
+
+.custom-date-display i {
+    opacity: .6;
+    font-size: 18px;
+}
+
+.calendar-popup {
+    position: absolute;
+    top: 65px;
+    left: 0;
+    width: 100% !important;
+    max-width: 300px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid #ddd;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    z-index: 50;
+    display: none;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.calendar-header button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.calendar-header span {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    text-align: center;
+}
+
+.calendar-day {
+    padding: 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .2s;
+    font-size: 14px;
+}
+
+.calendar-day:hover {
+    background: #007bff;
+    color: white;
+}
+
+.calendar-day.selected {
+    background: #007bff !important;
+    color: white !important;
+}
+
+.calendar-day.disabled {
+    opacity: .25;
+    pointer-events: none;
+}
+
+.filter-group .form-select,
+.filter-group .custom-date-display {
+    height: 48px !important;
+    font-size: 15px;
+    padding-left: 12px;
+}
+
+</style> *@
+
+@* <h1 class="mb-4">Gestión de Reportes</h1>
+<p class="text-muted">Consulta, filtra y descarga el historial de solicitudes internas completadas.</p>
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Filtros de Reporte</h5>
+    </div>
+
+    <div class="card-body">
+        <form asp-controller="Administrativo" asp-action="Reportes" method="get">
+
+            <div class="row g-3 filter-group">
+
+                <!-- Departamento -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Departamento</label>
+                    <select id="filtroDepartamento" name="departamento" class="form-select">
+                        <option value="">Todos los Departamentos</option>
+                        <option value="Ventas" selected="@(ViewBag.FiltroDepartamento == "Ventas")">Ventas</option>
+                        <option value="IT" selected="@(ViewBag.FiltroDepartamento == "IT")">IT</option>
+                        <option value="RRHH" selected="@(ViewBag.FiltroDepartamento == "RRHH")">Recursos Humanos</option>
+                    </select>
+                </div>
+
+                <!-- Tipo de Solicitud -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Tipo de Solicitud</label>
+                    <select id="filtroTipo" name="tipoSolicitud" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="Vacaciones" selected="@(ViewBag.FiltroTipo == "Vacaciones")">Vacaciones</option>
+                        <option value="Permiso" selected="@(ViewBag.FiltroTipo == "Permiso")">Permiso</option>
+                        <option value="Compra" selected="@(ViewBag.FiltroTipo == "Compra")">Compra de Equipo</option>
+                    </select>
+                </div>
+
+                <!-- Fecha Inicio -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Fecha Inicio</label>
+                    <div class="custom-date">
+                        <div class="custom-date-display" onclick="toggleCalendar('inicio')">
+                            <span id="fechaInicioTexto">@(ViewBag.FiltroInicio ?? "Seleccionar")</span>
+                            <i class="bi bi-calendar3"></i>
+                        </div>
+
+                        <div id="popup-inicio" class="calendar-popup"></div>
+
+                        <input type="hidden" id="filtroFechaInicio" name="fechaInicio"
+                               value="@ViewBag.FiltroInicio" />
+                    </div>
+                </div>
+
+                <!-- Fecha Fin -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Fecha Fin</label>
+                    <div class="custom-date">
+                        <div class="custom-date-display" onclick="toggleCalendar('fin')">
+                            <span id="fechaFinTexto">@(ViewBag.FiltroFin ?? "Seleccionar")</span>
+                            <i class="bi bi-calendar3"></i>
+                        </div>
+
+                        <div id="popup-fin" class="calendar-popup"></div>
+
+                        <input type="hidden" id="filtroFechaFin" name="fechaFin"
+                               value="@ViewBag.FiltroFin" />
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-filter"></i> Filtrar Solicitudes
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+<!-- TABLA -->
+<div class="card shadow mt-4">
+    <div class="card-body table-container-fixed">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo</th>
+                    <th>Departamento</th>
+                    <th>Estado</th>
+                    <th>Fecha Creación</th>
+                    <th>Fecha Finalización</th>
+                    <th>Tiempo Respuesta</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var solicitud in Model)
+                    {
+                        <tr>
+                            <td>@solicitud.idSolicitud</td>
+                            <td>@solicitud.tipoSolicitud</td>
+                            <td>@solicitud.departamentosolicitado</td>
+
+                            <td>
+                                <span class="badge @(solicitud.estadoSolicitud == "Aprobada"
+                                    ? "bg-success"
+                                    : (solicitud.estadoSolicitud == "Rechazada"
+                                        ? "bg-danger" : "bg-warning"))">
+                                    @solicitud.estadoSolicitud
+                                </span>
+                            </td>
+
+                            <td>@solicitud.fechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+
+                            <td>@(solicitud.fechaFinalizacion?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+
+                            <td><strong>@solicitud.TiempoDeRespuesta</strong></td>
+
+                            <td>
+                                <a asp-controller="Administrativo"
+                                   asp-action="DescargarPDF"
+                                   asp-route-id="@solicitud.idSolicitud"
+                                   class="btn btn-sm btn-info">
+                                    PDF
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">No se encontraron solicitudes.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- PAGINACION -->
+<nav aria-label="Paginación" class="mt-3">
+    <ul class="pagination justify-content-center">
+
+        <li class="page-item @(ViewBag.Page <= 1 ? "disabled" : "")">
+            <a class="page-link"
+               asp-route-page="@(ViewBag.Page - 1)"
+               asp-route-departamento="@ViewBag.FiltroDepartamento"
+               asp-route-tipoSolicitud="@ViewBag.FiltroTipo"
+               asp-route-fechaInicio="@ViewBag.FiltroInicio"
+               asp-route-fechaFin="@ViewBag.FiltroFin">
+                Anterior
+            </a>
+        </li>
+
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                <a class="page-link"
+                   asp-route-page="@i"
+                   asp-route-departamento="@ViewBag.FiltroDepartamento"
+                   asp-route-tipoSolicitud="@ViewBag.FiltroTipo"
+                   asp-route-fechaInicio="@ViewBag.FiltroInicio"
+                   asp-route-fechaFin="@ViewBag.FiltroFin">
+                    @i
+                </a>
+            </li>
+        }
+
+        <li class="page-item @(ViewBag.Page >= ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link"
+               asp-route-page="@(ViewBag.Page + 1)"
+               asp-route-departamento="@ViewBag.FiltroDepartamento"
+               asp-route-tipoSolicitud="@ViewBag.FiltroTipo"
+               asp-route-fechaInicio="@ViewBag.FiltroInicio"
+               asp-route-fechaFin="@ViewBag.FiltroFin">
+                Siguiente
+            </a>
+        </li>
+
+    </ul>
+</nav> *@
+
+@* <script>
+let currentCalendars = {
+    inicio: new Date(),
+    fin: new Date()
+};
+
+function toggleCalendar(tipo) {
+    const popup = document.getElementById("popup-" + tipo);
+
+    document.querySelectorAll(".calendar-popup").forEach(p => {
+        if (p !== popup) p.style.display = "none";
+    });
+
+    popup.style.display = popup.style.display === "block" ? "none" : "block";
+    renderCalendar(tipo);
+}
+
+function renderCalendar(tipo) {
+    const popup = document.getElementById("popup-" + tipo);
+    const date = currentCalendars[tipo];
+
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthNames = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+    const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
+
+    let html = `
+        <div class="calendar-header">
+            <button onclick="changeMonth('${tipo}', -1)">‹</button>
+            <span>${monthNames[month]} ${year}</span>
+            <button onclick="changeMonth('${tipo}', 1)">›</button>
+        </div>
+
+        <div class="calendar-grid">
+            <div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div><div>D</div>
+    `;
+
+    for (let i = 0; i < firstDay; i++) html += `<div></div>`;
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        html += `<div class="calendar-day" onclick="selectDate('${tipo}', ${day})">${day}</div>`;
+    }
+
+    html += `</div>`;
+    popup.innerHTML = html;
+}
+
+function changeMonth(tipo, diff) {
+    currentCalendars[tipo].setMonth(currentCalendars[tipo].getMonth() + diff);
+    renderCalendar(tipo);
+}
+
+function selectDate(tipo, day) {
+    const date = currentCalendars[tipo];
+    const d = date.getFullYear() + "-" +
+              String(date.getMonth() + 1).padStart(2, '0') + "-" +
+              String(day).padStart(2, '0');
+
+    document.getElementById("filtroFecha" + (tipo === "inicio" ? "Inicio" : "Fin")).value = d;
+    document.getElementById("fecha" + (tipo === "inicio" ? "Inicio" : "Fin") + "Texto").innerText = d;
+
+    document.getElementById("popup-" + tipo).style.display = "none";
+}
+
+</script> *@

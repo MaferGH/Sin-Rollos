@@ -1,0 +1,231 @@
+﻿@model WebApp.Models.Solicitudes.JefeDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard de Jefatura";
+    Layout = "_LayoutJefe";
+}
+
+<div class="main-content" style="margin-left: 200px;">
+    <div class="container mt-4">
+
+        <h2 class="fw-bold text-dark mb-3">Dashboard</h2>
+        <p class="text-muted mb-4">Resumen consolidado del estado operativo actual.</p>
+
+        <div class="row">
+
+            <!-- Pendientes -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow-sm border-0 card-hover">
+                    <div class="card-body">
+                        <small class="text-muted text-uppercase fw-semibold">Pendientes</small>
+                        <h2 class="fw-bold text-dark mt-1">@Model.TotalSolicitudesPendientes</h2>
+                        <div class="icon-rounded bg-warning-soft">
+                            <i class="bi bi-hourglass-split text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aprobadas -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow-sm border-0 card-hover">
+                    <div class="card-body">
+                        <small class="text-muted text-uppercase fw-semibold">Aprobadas</small>
+                        <h2 class="fw-bold text-dark mt-1">@Model.TotalSolicitudesAprobadas</h2>
+                        <div class="icon-rounded bg-success-soft">
+                            <i class="bi bi-check-circle text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rechazadas -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow-sm border-0 card-hover">
+                    <div class="card-body">
+                        <small class="text-muted text-uppercase fw-semibold">Rechazadas</small>
+                        <h2 class="fw-bold text-dark mt-1">@Model.TotalSolicitudesRechazadas</h2>
+                        <div class="icon-rounded bg-danger-soft">
+                            <i class="bi bi-x-circle text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow-sm border-0 card-hover">
+                    <div class="card-body">
+                        <small class="text-muted text-uppercase fw-semibold">Total General</small>
+                        <h2 class="fw-bold text-dark mt-1">@Model.TotalSolicitudesGeneral</h2>
+                        <div class="icon-rounded bg-primary-soft">
+                            <i class="bi bi-collection text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECCIÓN GRÁFICAS -->
+        <h5 class="fw-bold text-dark mt-4 mb-3">Análisis Visual</h5>
+
+        <div class="row">
+
+            <!-- Gráfico de Barras -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-0 fw-semibold text-dark">
+                        Comparativa Operativa
+                    </div>
+                    <div class="card-body">
+                        <canvas id="barChart" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Líneas (Semana) -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-0 fw-semibold text-dark">
+                        Tendencia Semanal (Total de Solicitudes)
+                    </div>
+                    <div class="card-body">
+                        <canvas id="lineChart" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <h5 class="fw-bold text-dark mt-4 mb-3">Acciones Rápidas</h5>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <a href="@Url.Action("Solicitudes", "Jefe")" class="btn btn-outline-dark btn-lg w-100 py-3 shadow-sm">
+                    Revisar Solicitudes Pendientes
+                </a>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <a href="@Url.Action("Historial", "Jefe")" class="btn btn-outline-dark btn-lg w-100 py-3 shadow-sm">
+                    Ver Historial Completo
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const pendientes = @Model.TotalSolicitudesPendientes;
+        const aprobadas = @Model.TotalSolicitudesAprobadas;
+        const rechazadas = @Model.TotalSolicitudesRechazadas;
+
+        const semanaLabels = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+        const semanaTotales = @Html.Raw(Json.Serialize(Model.TotalesPorDiaSemana));
+
+
+            @* GRÁFICA DE BARRAS *@
+
+        new Chart(document.getElementById("barChart"), {
+            type: 'bar',
+            data: {
+                labels: ["Pendientes", "Aprobadas", "Rechazadas"],
+                datasets: [{
+                    data: [pendientes, aprobadas, rechazadas],
+                    backgroundColor: ["#e0a800", "#218838", "#c82333"],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: "#eee" } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+
+            @* GRÁFICA DE LÍNEAS (SEMANA) *@
+
+        new Chart(document.getElementById("lineChart"), {
+            type: 'line',
+            data: {
+                labels: semanaLabels,
+                datasets: [{
+                    label: "Solicitudes Totales",
+                    data: semanaTotales,
+                    fill: false,
+                    tension: 0.35,
+                    borderColor: "#0d6efd",
+                    borderWidth: 3,
+                    pointBackgroundColor: "#0d6efd",
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: "#eee" } },
+                    x: { grid: { display: false } }
+                },
+                animation: {
+                    duration: 900,
+                    easing: "easeOutQuad"
+                }
+            }
+        });
+    </script>
+
+
+    <style>
+        .chart-canvas {
+            width: 100% !important;
+            height: 260px !important;
+        }
+
+
+        .card-hover {
+            transition: all .2s ease-in-out;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .icon-rounded {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 12px;
+            font-size: 1.3rem;
+        }
+
+        .bg-warning-soft {
+            background: rgba(255, 193, 7, .15);
+        }
+
+        .bg-success-soft {
+            background: rgba(40, 167, 69, .15);
+        }
+
+        .bg-danger-soft {
+            background: rgba(220, 53, 69, .15);
+        }
+
+        .bg-primary-soft {
+            background: rgba(0, 123, 255, .15);
+        }
+    </style>
+}
