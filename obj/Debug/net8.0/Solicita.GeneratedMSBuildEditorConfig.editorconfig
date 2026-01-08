@@ -1,0 +1,119 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Solicita
+build_property.RootNamespace = Solicita
+build_property.ProjectDir = /Users/fernandagarcia/source/repos/Sin-Rollos/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/fernandagarcia/source/repos/Sin-Rollos
+build_property._RazorSourceGeneratorDebug = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Administrativo/Historial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW5pc3RyYXRpdm8vSGlzdG9yaWFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Administrativo/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW5pc3RyYXRpdm8vSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Administrativo/Reportes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW5pc3RyYXRpdm8vUmVwb3J0ZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Empleado/Ayuda.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRW1wbGVhZG8vQXl1ZGEuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Empleado/BandejaEntrada.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRW1wbGVhZG8vQmFuZGVqYUVudHJhZGEuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Empleado/Configuracion.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRW1wbGVhZG8vQ29uZmlndXJhY2lvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Empleado/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRW1wbGVhZG8vSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Empleado/MisSolicitudes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRW1wbGVhZG8vTWlzU29saWNpdHVkZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Empleado/NuevaSolicitud.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRW1wbGVhZG8vTnVldmFTb2xpY2l0dWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Empleado/Solicitudes/RH/FormVacaciones.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRW1wbGVhZG8vU29saWNpdHVkZXMvUkgvRm9ybVZhY2FjaW9uZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Jefe/Ayuda.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSmVmZS9BeXVkYS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Jefe/BandejaEntrada.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSmVmZS9CYW5kZWphRW50cmFkYS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Jefe/Configuracion.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSmVmZS9Db25maWd1cmFjaW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Jefe/Historial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSmVmZS9IaXN0b3JpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Jefe/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSmVmZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Jefe/Solicitudes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSmVmZS9Tb2xpY2l0dWRlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Login/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9naW4vSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Shared/_LayoutAdministrador.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXRBZG1pbmlzdHJhZG9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Shared/_LayoutEmpleado.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXRFbXBsZWFkby5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Shared/_LayoutJefe.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXRKZWZlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Shared/_LayoutLogin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXRMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/fernandagarcia/source/repos/Sin-Rollos/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-ik1o1yux0t

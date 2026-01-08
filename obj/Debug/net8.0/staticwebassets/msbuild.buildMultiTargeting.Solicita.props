@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/Solicita.props" />
+</Project>

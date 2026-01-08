@@ -1,0 +1,91 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/fernandagarcia/source/repos/Sin-Rollos/Solicita.csproj": {}
+  },
+  "projects": {
+    "/Users/fernandagarcia/source/repos/Sin-Rollos/Solicita.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/fernandagarcia/source/repos/Sin-Rollos/Solicita.csproj",
+        "projectName": "Solicita",
+        "projectPath": "/Users/fernandagarcia/source/repos/Sin-Rollos/Solicita.csproj",
+        "packagesPath": "/Users/fernandagarcia/.nuget/packages/",
+        "outputPath": "/Users/fernandagarcia/source/repos/Sin-Rollos/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/fernandagarcia/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[9.4.0, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2025.7.4, )"
+            },
+            "Rotativa.AspNetCore": {
+              "target": "Package",
+              "version": "[1.4.0, )"
+            },
+            "iText7": {
+              "target": "Package",
+              "version": "[9.4.0, )"
+            },
+            "itext.bouncy-castle-adapter": {
+              "target": "Package",
+              "version": "[9.4.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
