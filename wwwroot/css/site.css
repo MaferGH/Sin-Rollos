@@ -1,0 +1,147 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* --- Estilos para el Layout de Login --- */
+
+/* Contenedor principal para la vista de login */
+.login-container {
+    height: 100vh;
+    display: flex;
+    font-family: Arial, sans-serif; /* O la fuente que estés usando */
+}
+
+/* Sección izquierda para el formulario (fondo blanco) */
+.login-form-section {
+    flex: 1; /* Ocupa el 50% del ancho */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: #fff; /* Fondo blanco */
+}
+
+/* Sección derecha para la imagen y el texto (fondo azul/oscuro) */
+.login-info-section {
+    flex: 1; /* Ocupa el 50% del ancho */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background: #004d99; /* Color base */
+    /* Degradado de fondo con formas abstractas (simulación) */
+    background-image: radial-gradient(circle at 10% 20%, rgba(0,0,0,0.1) 0%, transparent 50%),
+                      linear-gradient(135deg, #004d99 0%, #007bff 100%);
+    background-size: cover;
+    color: white;
+}
+
+/* Contenedor del contenido dentro de la sección de información */
+.info-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Estilo para el título del sistema */
+.info-card h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Estilos para el formulario de Login */
+.login-form-content {
+    max-width: 380px; /* Ajustar el ancho del formulario */
+    width: 100%;
+}
+
+.login-form-content h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+/* Campos de entrada con icono */
+.input-group-custom {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.input-group-custom .form-control {
+    padding-left: 3rem; /* Espacio para el icono */
+    border: none;
+    border-radius: 8px;
+    background-color: #f0f4f8; /* Fondo claro para el input */
+    height: 50px; /* Altura del input */
+}
+
+.input-group-custom .icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 1.2rem;
+    z-index: 10;
+}
+
+/* Botón Ingresar */
+.btn-ingresar {
+    background-color: #007bff; /* Color azul primario */
+    border-color: #007bff;
+    padding: 0.75rem 0;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-top: 1.5rem;
+}
+
+.btn-ingresar:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Enlace Olvidaste tu contraseña */
+.forgot-password-link {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #007bff !important;
+    text-decoration: none !important;
+}
+
+/* Enlace Términos y Condiciones */
+.terms-link {
+    display: block;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: #888;
+    text-decoration: none;
+}
